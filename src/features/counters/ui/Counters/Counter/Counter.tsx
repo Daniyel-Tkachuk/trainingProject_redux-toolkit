@@ -1,17 +1,18 @@
-import type {CounterId, CounterState, DecrementAction, IncrementAction} from "../../../model/reducerCounter.ts";
-import {type AppState, store} from "../../../../../app/store.ts";
-import {useEffect, useReducer, useRef} from "react";
+import type {CounterId, DecrementAction, IncrementAction} from "../../../model/reducerCounter.ts";
+import {selectCounter, useAppSelector} from "../../../../../app/store.ts";
+import {useDispatch} from "react-redux";
 
 type Props = {
   counterId: CounterId
 }
 
-const selectCounter = (state: AppState, counterId: CounterId): CounterState => state.counters[counterId];
+
 
 export const Counter = ({counterId}: Props) => {
+  /*
+  ********* Сохраннение предыдущего стейта через useRef (подкапотная работа useSelector) ******
   const [_, forceUpdate] = useReducer((x) => x + 1, 0)
-
-  const lastStateRef = useRef<ReturnType<typeof selectCounter>>();
+  const lastStateRef = useRef<ReturnType<typeof selectCounter>>(null);
 
   useEffect(() => {
     return store.subscribe(() => {
@@ -25,20 +26,22 @@ export const Counter = ({counterId}: Props) => {
       lastStateRef.current = currentState
     })
   }, [])
+  const currentState = selectCounter(store.getState(), counterId);*/
 
-  const currentState = selectCounter(store.getState(), counterId);
+  const dispatch = useDispatch()
+  const counterState = useAppSelector((state) => selectCounter(state, counterId));
 
   return (
     <div>
       <div>
-        counter: {currentState?.counter}
+        counter: {counterState?.counter}
       </div>
       <div>
         <button
-          onClick={() => store.dispatch({type: 'increment', payload: {counterId}} satisfies IncrementAction)}>inc
+          onClick={() => dispatch({type: 'increment', payload: {counterId}} satisfies IncrementAction)}>inc
         </button>
         <button
-          onClick={() => store.dispatch({type: 'decrement', payload: {counterId}} satisfies DecrementAction)}>dec
+          onClick={() => dispatch({type: 'decrement', payload: {counterId}} satisfies DecrementAction)}>dec
         </button>
       </div>
     </div>
