@@ -1,16 +1,42 @@
+
+
+
+export type UserId = string
+
+export type User = {
+  id: UserId
+  name: string
+  description: string
+}
+
+export type UsersState = {
+  entities: Record<UserId, User>
+  ids: UserId[]
+  selectedUserId: UserId | undefined
+}
+
 export type CounterState = {
   counter: number
 }
 export type CounterId = string
+
 type InitialState = {
   counters: Record<CounterId, CounterState | undefined>
-}
-const initialState: InitialState = {
-  counters: {}
+  users: UsersState
 }
 
 const initialCounterState = {
   counter: 0
+}
+const initialUsersState: UsersState = {
+  entities: {},
+  ids: [],
+  selectedUserId: undefined
+}
+
+const initialState: InitialState = {
+  counters: {},
+  users: initialUsersState
 }
 
 export const reducerCounter = (state = initialState, action: Actions): InitialState => {
@@ -43,6 +69,39 @@ export const reducerCounter = (state = initialState, action: Actions): InitialSt
         }
       }
     }
+    case 'usersStored': {
+      const {users} = action.payload
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          entities: users.reduce((acc, user) => {
+            acc[user.id] = user
+            return acc
+          }, {} as Record<UserId, User>),
+          ids: users.map(user => user.id)
+        },
+      }
+    }
+    case 'userSelected': {
+      const {userId} = action.payload
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          selectedUserId: userId
+        }
+      }
+    }
+    case 'userRemoveSelected': {
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          selectedUserId: undefined
+        }
+      }
+    }
     default: {
       return state
     }
@@ -63,7 +122,29 @@ export type DecrementAction = {
   };
 };
 
-type Actions = IncrementAction | DecrementAction
+export type UserSelectedAction = {
+  type: "userSelected",
+  payload: {
+    userId: string
+  }
+}
+
+export type UserRemoveSelectedAction = {
+  type: "userRemoveSelected",
+}
+
+export type UsersStoredAction = {
+  type: "usersStored",
+  payload: {
+    users: User[]
+  }
+}
+
+type Actions = IncrementAction
+  | DecrementAction
+  | UserSelectedAction
+  | UserRemoveSelectedAction
+  | UsersStoredAction
 
 
 /*export const IncrementAC = (counterId: CounterId) => {

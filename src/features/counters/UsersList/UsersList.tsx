@@ -1,41 +1,40 @@
-import {useState} from "react";
+import {memo, useState} from "react";
+import {type UserId, type UserRemoveSelectedAction, type UserSelectedAction} from "../model/reducerCounter.ts";
+import {type AppState, createAppSelector, useAppDispatch, useAppSelector} from "../../../app/store.ts";
 
-type UserId = string
 
-type User = {
-  id: UserId
-  name: string
-  description: string
-}
-
-const users: User[] = Array.from({length: 3000}, (_, index) => ({
-  id: `user${index + 11}`,
-  name: `User ${index + 11}`,
-  description: `Description for User ${index + 11}`
-}))
+const selectSortedUsers = createAppSelector(
+  (state: AppState) => state.users.ids,
+  (state: AppState) => state.users.entities,
+  (_: AppState, sort: "asc" | "desc") => sort,
+  (ids, entities, sort) =>
+    ids
+      .map((id) => entities[id])
+      .sort((a, b) => sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
+)
 
 export const UsersList = () => {
-  const [selectedUser, setSelectedUser] = useState<User>();
-
   const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
 
-  const handleUserClick  = (user: User) => {
-    setSelectedUser(user)
-  }
+  const sortedUsers = useAppSelector((state) => selectSortedUsers(state, sortType))
+  const selectedUserId = useAppSelector((state) => state.users.selectedUserId)
 
-  const handleBackButtonClick = () => {
-    setSelectedUser(undefined)
-  }
+  // *********** этот код ниже, преднозачен, если мы хотим оптимизировать приложение без применения реселекта, который описан выше ****
+  // const entities = useAppSelector(state => state.users.entities)
+  // const ids = useAppSelector(state => state.users.ids)
+  // const selectedUserId = useAppSelector(state => state.users.selectedUserId)
 
-  const sortedUsers = users.sort((a, b) => (
-    sortType === "asc"
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name)
-  ))
+  /*const selectedUser = selectedUserId ? entities[selectedUserId] : undefined*/
+
+  /*const sortedUsers = useMemo(() => {
+    return ids
+      .map((id) => entities[id])
+      .sort((a, b) => sortType === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
+  }, [ids, entities, sortType])*/
 
   return (
     <div className="flex flex-col items-center">
-      {!selectedUser ? (
+      {!selectedUserId ? (
         <div className="flex flex-col items-center justify-between">
           <div className="flex flex-row items-center">
             <button
@@ -54,8 +53,7 @@ export const UsersList = () => {
           <ul className="list-none">
             {sortedUsers.map((user) => (
               <UserListItem
-                onClick={() => handleUserClick(user)}
-                user={user}
+                userId={user.id}
                 key={user.id}
               />
             ))}
@@ -63,8 +61,7 @@ export const UsersList = () => {
         </div>
       ) : (
         <SelectedUser
-          user={selectedUser}
-          onBackButtonClick={handleBackButtonClick}
+          userId={selectedUserId}
         />
       )}
     </div>
@@ -72,28 +69,45 @@ export const UsersList = () => {
 };
 
 type UserListItem = {
-  user: User
-  onClick: () => void
+  userId: UserId
 }
 
-function UserListItem({user, onClick}: UserListItem) {
+export const UserListItem = memo(function UserListItem({userId}: UserListItem) {
+  const user = useAppSelector(state => state.users.entities[userId])
+  const dispatch = useAppDispatch()
+
+  const handleUserClick = () => {
+    dispatch({
+      type: 'userSelected',
+      payload: {userId: user.id}
+    } satisfies UserSelectedAction)
+  }
+
   return (
-    <li key={user.id} className="py-2" onClick={onClick}>
+    <li key={user.id} className="py-2" onClick={handleUserClick}>
       <span className="hover:underline cursor-pointer">{user.name}</span>
     </li>
   );
-}
+})
 
 type SelectedUser = {
-  user: User
-  onBackButtonClick: () => void
+  userId: UserId
 }
 
-function SelectedUser({user, onBackButtonClick}: SelectedUser) {
+function SelectedUser({userId}: SelectedUser) {
+  const user = useAppSelector(state => state.users.entities[userId])
+  const dispatch = useAppDispatch()
+
+  const handleBackButtonClick = () => {
+    dispatch({
+      type: 'userRemoveSelected',
+    } satisfies UserRemoveSelectedAction)
+  }
+
   return (
     <div className="flex flex-col items-center">
       <button
-        onClick={onBackButtonClick}
+        onClick={handleBackButtonClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded md"
       >
         Back
