@@ -1,12 +1,11 @@
 import {memo, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/store.ts";
 import {
-  selectSelectedUserId,
-  selectSortedUsers,
   type UserId,
   type UserRemoveSelectedAction,
   type UserSelectedAction
 } from "./users.slice.ts";
+import {selectSelectedUserId, selectSortedUsers} from "./users-selectors.ts";
 
 
 export const UsersList = () => {

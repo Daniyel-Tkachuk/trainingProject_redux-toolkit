@@ -1,4 +1,5 @@
-import {Counter} from "./counter.tsx";
+import {Counter} from "./Сounter.tsx";
+
 
 export const Counters = () => {
   return (

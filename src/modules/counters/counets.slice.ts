@@ -1,4 +1,7 @@
-import type {AppState} from "../../app/store.ts";
+import {createAction} from "@reduxjs/toolkit";
+
+export const incrementAction = createAction<{counterId: CounterId}>("counters/increment")
+export const decrementAction = createAction<{counterId: CounterId}>("counters/decrement")
 
 export type CounterId = string
 
@@ -60,5 +63,5 @@ export type DecrementAction = {
 
 type Actions = IncrementAction | DecrementAction
 
-export const selectCounter = (state: AppState, counterId: CounterId) => state.counters[counterId];
+
 
