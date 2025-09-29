@@ -1,6 +1,6 @@
 import './App.css'
-import {Counters} from "../features/counters/ui/Counters/Counters.tsx";
-import {UsersList} from "../features/counters/UsersList/UsersList.tsx";
+import {Counters} from "../modules/counters/counters.tsx";
+import {UsersList} from "../modules/users/users-list.tsx";
 
 function App() {
 

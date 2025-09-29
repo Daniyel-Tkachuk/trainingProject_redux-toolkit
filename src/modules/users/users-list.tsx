@@ -1,25 +1,21 @@
 import {memo, useState} from "react";
-import {type UserId, type UserRemoveSelectedAction, type UserSelectedAction} from "../model/reducerCounter.ts";
-import {type AppState, createAppSelector, useAppDispatch, useAppSelector} from "../../../app/store.ts";
+import {useAppDispatch, useAppSelector} from "../../app/store.ts";
+import {
+  selectSelectedUserId,
+  selectSortedUsers,
+  type UserId,
+  type UserRemoveSelectedAction,
+  type UserSelectedAction
+} from "./users.slice.ts";
 
-
-const selectSortedUsers = createAppSelector(
-  (state: AppState) => state.users.ids,
-  (state: AppState) => state.users.entities,
-  (_: AppState, sort: "asc" | "desc") => sort,
-  (ids, entities, sort) =>
-    ids
-      .map((id) => entities[id])
-      .sort((a, b) => sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
-)
 
 export const UsersList = () => {
   const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
 
   const sortedUsers = useAppSelector((state) => selectSortedUsers(state, sortType))
-  const selectedUserId = useAppSelector((state) => state.users.selectedUserId)
+  const selectedUserId = useAppSelector(selectSelectedUserId)
 
-  // *********** этот код ниже, преднозачен, если мы хотим оптимизировать приложение без применения реселекта, который описан выше ****
+  // *********** этот код ниже, преднозачен, если мы хотим оптимизировать приложение без применения реселекта, который описан в users.slice ****
   // const entities = useAppSelector(state => state.users.entities)
   // const ids = useAppSelector(state => state.users.ids)
   // const selectedUserId = useAppSelector(state => state.users.selectedUserId)
@@ -68,11 +64,8 @@ export const UsersList = () => {
   );
 };
 
-type UserListItem = {
-  userId: UserId
-}
 
-export const UserListItem = memo(function UserListItem({userId}: UserListItem) {
+export const UserListItem = memo(function UserListItem({userId}: {userId: UserId}) {
   const user = useAppSelector(state => state.users.entities[userId])
   const dispatch = useAppDispatch()
 
@@ -90,11 +83,8 @@ export const UserListItem = memo(function UserListItem({userId}: UserListItem) {
   );
 })
 
-type SelectedUser = {
-  userId: UserId
-}
 
-function SelectedUser({userId}: SelectedUser) {
+function SelectedUser({userId}: {userId: UserId}) {
   const user = useAppSelector(state => state.users.entities[userId])
   const dispatch = useAppDispatch()
 

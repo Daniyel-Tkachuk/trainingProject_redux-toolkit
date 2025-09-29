@@ -1,12 +1,15 @@
-import type {CounterId, DecrementAction, IncrementAction} from "../../../model/reducerCounter.ts";
-import {selectCounter, useAppSelector} from "../../../../../app/store.ts";
+import {useAppSelector} from "../../app/store.ts";
 import {useDispatch} from "react-redux";
+import {
+  type CounterId,
+  type DecrementAction,
+  type IncrementAction,
+  selectCounter
+} from "./counets.slice.ts";
 
 type Props = {
   counterId: CounterId
 }
-
-
 
 export const Counter = ({counterId}: Props) => {
   /*
