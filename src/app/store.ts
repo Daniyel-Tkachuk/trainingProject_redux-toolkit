@@ -1,6 +1,6 @@
-import {combineReducers, configureStore, createSelector} from "@reduxjs/toolkit";
+import {configureStore, createSelector} from "@reduxjs/toolkit";
 import {useDispatch, useSelector, useStore} from "react-redux";
-import {initialUsersList, usersReducer, type UsersStoredAction} from "../modules/users/users.slice.ts";
+import {initialUsersList, usersSlice} from "../modules/users/users.slice.ts";
 import {countersReducer} from "../modules/counters/counets.slice.ts";
 
 // вот что возвращает combineReducer , ниже показан типа самописный rootReducer
@@ -14,19 +14,15 @@ import {countersReducer} from "../modules/counters/counets.slice.ts";
 
 // для самописных редьюсеров нужен combineReducer чтобы работать с configureStore
 
-const rootReducer = combineReducers({
-  users: usersReducer,
-  counters: countersReducer,
-})
 
 export const store = configureStore({
-  reducer: rootReducer
+  reducer: {
+    counters: countersReducer,
+    [usersSlice.name]: usersSlice.reducer
+  }
 })
 
-store.dispatch({
-  type: "usersStored",
-  payload: {users: initialUsersList}
-} satisfies UsersStoredAction)
+store.dispatch(usersSlice.actions.stored({users: initialUsersList}))
 
 export type AppState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

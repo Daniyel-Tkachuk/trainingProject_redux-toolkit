@@ -1,3 +1,5 @@
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+
 export const initialUsersList: User[] = Array.from({length: 3000}, (_, index) => ({
   id: `user${index + 11}`,
   name: `User ${index + 11}`,
@@ -18,13 +20,41 @@ export type UsersState = {
   selectedUserId: UserId | undefined
 }
 
-const UsersState: UsersState = {
+const usersState: UsersState = {
   entities: {},
   ids: [],
   selectedUserId: undefined
 }
 
-export const usersReducer = (state = UsersState, action: Actions): UsersState => {
+export const usersSlice = createSlice({
+  name: "users",
+  initialState: usersState,
+  reducers: {
+    selectedUser: (state, action: PayloadAction<{userId: UserId}>) => {
+      const {userId} = action.payload
+      state.selectedUserId = userId
+    },
+    selectRemoved: (state) => {
+      state.selectedUserId = undefined
+    },
+    stored: (state, action: PayloadAction<{users: User[]}>) => {
+      const {users} = action.payload
+      state.entities = users.reduce<Record<UserId, User>>((acc, user) => {
+        acc[user.id] = user
+        return acc
+      }, {})
+      state.ids = users.map((user) => user.id)
+    }
+  },
+  selectors: {
+    selectSelectedUserId: (state) => state.selectedUserId,
+  }
+})
+
+
+
+
+/*export const usersReducer = (state = usersState, action: Actions): UsersState => {
   switch (action.type) {
     case 'usersStored': {
       const {users} = action.payload
@@ -74,5 +104,5 @@ export type UsersStoredAction = {
   }
 }
 
-type Actions = | UserSelectedAction | UserRemoveSelectedAction | UsersStoredAction
+type Actions = | UserSelectedAction | UserRemoveSelectedAction | UsersStoredAction*/
 

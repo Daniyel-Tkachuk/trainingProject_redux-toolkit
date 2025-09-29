@@ -1,18 +1,18 @@
 import {memo, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/store.ts";
-import {
-  type UserId,
-  type UserRemoveSelectedAction,
-  type UserSelectedAction
-} from "./users.slice.ts";
-import {selectSelectedUserId, selectSortedUsers} from "./users-selectors.ts";
+import {type UserId, usersSlice,} from "./users.slice.ts";
+import {selectSortedUsers} from "./users-selectors.ts";
 
 
 export const UsersList = () => {
   const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
 
-  const sortedUsers = useAppSelector((state) => selectSortedUsers(state, sortType))
-  const selectedUserId = useAppSelector(selectSelectedUserId)
+  const sortedUsers = useAppSelector((state) =>
+    selectSortedUsers(state, sortType)
+  )
+  const selectedUserId = useAppSelector(
+    usersSlice.selectors.selectSelectedUserId
+  )
 
   // *********** этот код ниже, преднозачен, если мы хотим оптимизировать приложение без применения реселекта, который описан в users.slice ****
   // const entities = useAppSelector(state => state.users.entities)
@@ -55,9 +55,7 @@ export const UsersList = () => {
           </ul>
         </div>
       ) : (
-        <SelectedUser
-          userId={selectedUserId}
-        />
+        <SelectedUser userId={selectedUserId}/>
       )}
     </div>
   );
@@ -69,10 +67,7 @@ export const UserListItem = memo(function UserListItem({userId}: {userId: UserId
   const dispatch = useAppDispatch()
 
   const handleUserClick = () => {
-    dispatch({
-      type: 'userSelected',
-      payload: {userId: user.id}
-    } satisfies UserSelectedAction)
+    dispatch(usersSlice.actions.selectedUser({userId}))
   }
 
   return (
@@ -88,9 +83,7 @@ function SelectedUser({userId}: {userId: UserId}) {
   const dispatch = useAppDispatch()
 
   const handleBackButtonClick = () => {
-    dispatch({
-      type: 'userRemoveSelected',
-    } satisfies UserRemoveSelectedAction)
+    dispatch(usersSlice.actions.selectRemoved())
   }
 
   return (
