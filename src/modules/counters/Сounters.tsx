@@ -3,7 +3,7 @@ import {Counter} from "./Сounter.tsx";
 
 export const Counters = () => {
   return (
-    <div style={{marginBottom: "50px"}}>
+    <div className="flex flex-col items-center">
       <Counter counterId={'first'}/>
       <Counter counterId={'second'}/>
     </div>
