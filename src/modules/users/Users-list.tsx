@@ -1,11 +1,19 @@
-import {memo, useState} from "react";
+import {memo, useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../app/store.ts";
 import {type UserId, usersSlice,} from "./users.slice.ts";
 import {selectSortedUsers} from "./users-selectors.ts";
+import {api} from "../../shared/api.ts";
 
 
 export const UsersList = () => {
   const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
+
+  useEffect(() => {
+    api.getUsers()
+      .then(users => {
+        console.log(users)
+      })
+  }, [])
 
   const sortedUsers = useAppSelector((state) =>
     selectSortedUsers(state, sortType)
