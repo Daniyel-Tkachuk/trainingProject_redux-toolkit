@@ -1,19 +1,21 @@
 import {memo, useEffect, useState} from "react";
-import {useAppDispatch, useAppSelector} from "../../app/store.ts";
+import {useAppDispatch, useAppSelector, useAppStore} from "../../app/store.ts";
 import {type UserId, usersSlice,} from "./users.slice.ts";
 import {selectSortedUsers} from "./users-selectors.ts";
-import {api} from "../../shared/api.ts";
+import {fetchUsers} from "./model/fetch-users.ts";
 
 
 export const UsersList = () => {
+  const dispatch = useAppDispatch();
+  const appStore = useAppStore()
   const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
+  const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUserPending)
 
   useEffect(() => {
-    api.getUsers()
-      .then(users => {
-        console.log(users)
-      })
-  }, [])
+    dispatch(fetchUsers())
+    // fetchUsers(appStore.dispatch, appStore.getState)
+  }, [dispatch, appStore])
+
 
   const sortedUsers = useAppSelector((state) =>
     selectSortedUsers(state, sortType)
@@ -34,6 +36,10 @@ export const UsersList = () => {
       .map((id) => entities[id])
       .sort((a, b) => sortType === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))
   }, [ids, entities, sortType])*/
+
+  if (isPending) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="flex flex-col items-center">
@@ -70,7 +76,7 @@ export const UsersList = () => {
 };
 
 
-export const UserListItem = memo(function UserListItem({userId}: {userId: UserId}) {
+export const UserListItem = memo(function UserListItem({userId}: { userId: UserId }) {
   const user = useAppSelector(state => state.users.entities[userId])
   const dispatch = useAppDispatch()
 
@@ -86,7 +92,7 @@ export const UserListItem = memo(function UserListItem({userId}: {userId: UserId
 })
 
 
-function SelectedUser({userId}: {userId: UserId}) {
+function SelectedUser({userId}: { userId: UserId }) {
   const user = useAppSelector(state => state.users.entities[userId])
   const dispatch = useAppDispatch()
 

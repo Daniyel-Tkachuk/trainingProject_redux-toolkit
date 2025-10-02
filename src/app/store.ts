@@ -1,7 +1,8 @@
-import {configureStore, createSelector} from "@reduxjs/toolkit";
+import {configureStore, createSelector, type ThunkAction, type UnknownAction} from "@reduxjs/toolkit";
 import {useDispatch, useSelector, useStore} from "react-redux";
-import {initialUsersList, usersSlice} from "../modules/users/users.slice.ts";
+import {usersSlice} from "../modules/users/users.slice.ts";
 import {countersReducer} from "../modules/counters/counets.slice.ts";
+import {api} from "../shared/api.ts";
 
 // вот что возвращает combineReducer , ниже показан типа самописный rootReducer
 /*export const rootReducer = (state = initialState, action: Actions): InitialState => {
@@ -14,18 +15,25 @@ import {countersReducer} from "../modules/counters/counets.slice.ts";
 
 // для самописных редьюсеров нужен combineReducer чтобы работать с configureStore
 
+const extraArgument = {
+  api
+}
 
 export const store = configureStore({
   reducer: {
     counters: countersReducer,
     [usersSlice.name]: usersSlice.reducer
-  }
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({thunk: {extraArgument}})
 })
 
-store.dispatch(usersSlice.actions.stored({users: initialUsersList}))
+// store.dispatch(usersSlice.actions.fetchUsersSuccess({users: initialUsersList}))
 
 export type AppState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+// типизация для thunk
+export type AppThunk<R = void> = ThunkAction<R, AppState, typeof extraArgument, UnknownAction>
 
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
 export const useAppSelector = useSelector.withTypes<AppState>()
