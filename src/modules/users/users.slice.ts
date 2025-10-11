@@ -6,6 +6,8 @@ export const initialUsersList: User[] = Array.from({length: 3000}, (_, index) =>
   description: `Description for User ${index + 11}`
 }))
 
+
+
 export type UserId = string
 
 export type User = {
@@ -15,35 +17,39 @@ export type User = {
 }
 
 export type UsersState = {
-  entities: Record<UserId, User>
+  entities: Record<UserId, User | undefined>
   ids: UserId[]
-  selectedUserId: UserId | undefined
+  // selectedUserId: UserId | undefined
   fetchUsersStatus: "idle" | "pending" | "success" | "failed"
+  fetchUserStatus: "idle" | "pending" | "success" | "failed"
 }
 
 const usersState: UsersState = {
   entities: {},
   ids: [],
-  selectedUserId: undefined,
-  fetchUsersStatus: "idle"
+  // selectedUserId: undefined,
+  fetchUsersStatus: "idle",
+  fetchUserStatus: "idle",
 }
 
 export const usersSlice = createSlice({
   name: "users",
   initialState: usersState,
   selectors: {
-    selectSelectedUserId: (state) => state.selectedUserId,
-    selectIsFetchUserPending: (state) => state.fetchUsersStatus === "pending",
-    selectIsFetchUserIdle: (state) => state.fetchUsersStatus === "idle",
+    // selectSelectedUserId: (state) => state.selectedUserId,
+    selectUserById: (state, userId: UserId) => state.entities[userId],
+    selectIsFetchUsersPending: (state) => state.fetchUsersStatus === "pending",
+    selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
+    selectIsFetchUserPending: (state) => state.fetchUserStatus === "pending",
   },
   reducers: {
-    selectedUser: (state, action: PayloadAction<{userId: UserId}>) => {
+    /*selectedUser: (state, action: PayloadAction<{userId: UserId}>) => {
       const {userId} = action.payload
       state.selectedUserId = userId
-    },
-    selectRemoved: (state) => {
+    },*/
+    /*selectRemoved: (state) => {
       state.selectedUserId = undefined
-    },
+    },*/
     fetchUsersPending: (state) => {
       state.fetchUsersStatus = "pending"
     },
@@ -58,7 +64,18 @@ export const usersSlice = createSlice({
     },
     fetchUsersFailed: (state) => {
       state.fetchUsersStatus = "failed"
-    }
+    },
+    fetchUserPending: (state) => {
+      state.fetchUserStatus = "pending"
+    },
+    fetchUserSuccess: (state, action: PayloadAction<{user: User}>) => {
+      const {user} = action.payload
+      state.fetchUsersStatus = "success"
+      state.entities[user.id] = user
+    },
+    fetchUserFailed: (state) => {
+      state.fetchUserStatus = "failed"
+    },
   },
 })
 

@@ -1,6 +1,7 @@
 import {createBrowserRouter, Link, Outlet, redirect} from "react-router-dom";
 import {UsersList} from "./modules/users/Users-list.tsx";
 import {Counters} from "./modules/counters/Сounters.tsx";
+import {UserInfo} from "./modules/users/User-info.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -24,8 +25,8 @@ export const router = createBrowserRouter([
         element: <UsersList/>
       },
       {
-        path: "users/:userId",
-        element: <div>User</div>
+        path: "users/:id",
+        element: <UserInfo/>
       },
       {
         path: "counters",
