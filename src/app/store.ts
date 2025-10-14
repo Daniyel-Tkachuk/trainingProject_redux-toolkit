@@ -15,7 +15,7 @@ import {extraArgument} from "../extra-arguments.ts";
 
 // для самописных редьюсеров нужен combineReducer чтобы работать с configureStore
 
-
+export const createAppSelector = createSelector.withTypes<AppState>()
 
 export const store = configureStore({
   reducer: {
@@ -33,10 +33,11 @@ export type AppDispatch = typeof store.dispatch
 // типизация для thunk
 export type AppThunk<R = void> = ThunkAction<R, AppState, typeof extraArgument, UnknownAction>
 
+
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
 export const useAppSelector = useSelector.withTypes<AppState>()
 export const useAppStore = useStore.withTypes<typeof store>()
-export const createAppSelector = createSelector.withTypes<AppState>()
+
 
 // @ts-ignore
 window.store = store

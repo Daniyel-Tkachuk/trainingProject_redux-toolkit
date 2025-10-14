@@ -1,27 +1,17 @@
-import {memo, useEffect, useState} from "react";
-import {useAppDispatch, useAppSelector, useAppStore} from "../../app/store.ts";
+import {memo, useState} from "react";
+import {selectSortedUsers} from "./users-selectors";
+import {useAppSelector} from "../../app/store.ts";
 import {type UserId, usersSlice,} from "./users.slice.ts";
-import {selectSortedUsers} from "./users-selectors.ts";
-import {fetchUsers} from "./model/fetch-users.ts";
 import {useNavigate} from "react-router-dom";
 
 
 export const UsersList = () => {
-  const dispatch = useAppDispatch();
-  const appStore = useAppStore()
   const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
   const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUserPending)
-
-  useEffect(() => {
-    dispatch(fetchUsers())
-    // fetchUsers(appStore.dispatch, appStore.getState)
-  }, [dispatch, appStore])
-
 
   const sortedUsers = useAppSelector((state) =>
     selectSortedUsers(state, sortType)
   )
-
 
   // *********** этот код ниже, преднозачен, если мы хотим оптимизировать приложение без применения реселекта, который описан в users.slice ****
   // const entities = useAppSelector(state => state.users.entities)

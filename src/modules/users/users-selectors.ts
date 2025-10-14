@@ -1,5 +1,8 @@
-import {type AppState, createAppSelector} from "../../app/store.ts";
+import {type AppState} from "../../app/store.ts";
 import type {User} from "./users.slice.ts";
+import {createSelector} from "@reduxjs/toolkit";
+
+const createAppSelector = createSelector.withTypes<AppState>()
 
 export const selectSortedUsers = createAppSelector(
   (state: AppState) => state.users.ids,

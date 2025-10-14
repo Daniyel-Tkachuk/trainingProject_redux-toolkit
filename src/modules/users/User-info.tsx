@@ -1,8 +1,6 @@
 import {type UserId, usersSlice} from "./users.slice.ts";
 import {useAppDispatch, useAppSelector} from "../../app/store.ts";
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect} from "react";
-import {fetchUser} from "./model/fetch-user.ts";
 import {deleteUser} from "./model/delete-user.ts";
 
 export function UserInfo() {
@@ -12,11 +10,6 @@ export function UserInfo() {
   const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUserPending)
   const isDeletePending = useAppSelector(usersSlice.selectors.selectIsFetchUserPending)
   const user = useAppSelector(state => usersSlice.selectors.selectUserById(state, id))
-
-
-  useEffect(() => {
-    dispatch(fetchUser(id))
-  }, [dispatch, id])
 
   const handleBackButtonClick = () => {
     navigate("..", {relative: "path"}) // возврат на prev страницу
