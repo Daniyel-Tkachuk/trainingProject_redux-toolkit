@@ -2,7 +2,7 @@ import {configureStore, createSelector, type ThunkAction, type UnknownAction} fr
 import {useDispatch, useSelector, useStore} from "react-redux";
 import {usersSlice} from "../modules/users/users.slice.ts";
 import {countersReducer} from "../modules/counters/counets.slice.ts";
-import {api} from "../shared/api.ts";
+import {extraArgument} from "../extra-arguments.ts";
 
 // вот что возвращает combineReducer , ниже показан типа самописный rootReducer
 /*export const rootReducer = (state = initialState, action: Actions): InitialState => {
@@ -15,9 +15,7 @@ import {api} from "../shared/api.ts";
 
 // для самописных редьюсеров нужен combineReducer чтобы работать с configureStore
 
-const extraArgument = {
-  api
-}
+
 
 export const store = configureStore({
   reducer: {

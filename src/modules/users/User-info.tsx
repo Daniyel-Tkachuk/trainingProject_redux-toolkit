@@ -3,17 +3,15 @@ import {useAppDispatch, useAppSelector} from "../../app/store.ts";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect} from "react";
 import {fetchUser} from "./model/fetch-user.ts";
+import {deleteUser} from "./model/delete-user.ts";
 
 export function UserInfo() {
   const {id = ""} = useParams<{id: UserId}>()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const isPending = useAppSelector(usersSlice.selectors.selectIsFetchUserPending)
+  const isDeletePending = useAppSelector(usersSlice.selectors.selectIsFetchUserPending)
   const user = useAppSelector(state => usersSlice.selectors.selectUserById(state, id))
-
-  console.log("status:", isPending)
-  console.log("user:", user)
-  console.log(id)
 
 
   useEffect(() => {
@@ -22,6 +20,10 @@ export function UserInfo() {
 
   const handleBackButtonClick = () => {
     navigate("..", {relative: "path"}) // возврат на prev страницу
+  }
+
+  const handleDeleteButtonClick = () => {
+    dispatch(deleteUser(id)).then(() => navigate("..", {relative: "path"}))
   }
 
   if (isPending || !user) {
@@ -42,6 +44,9 @@ export function UserInfo() {
       </button>
       <h2 className="text-3xl">{user.name}</h2>
       <p className="text-xl">{user.description}</p>
+      <button disabled={isDeletePending} className="bg-red-500 hover:bg-red-700 text-white font-bold ру-2" onClick={handleDeleteButtonClick}>
+        Delete
+      </button>
     </div>
   );
 }

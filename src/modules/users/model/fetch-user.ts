@@ -6,7 +6,6 @@ export const fetchUser = (userId: UserId): AppThunk => (dispatch, getState, {api
 
   if (!isPending) return;
 
-
   dispatch(usersSlice.actions.fetchUserPending())
   api
     .getUser(userId)
